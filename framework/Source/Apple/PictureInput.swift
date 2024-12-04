@@ -14,8 +14,14 @@ public class PictureInput: ImageSource {
     public let targets = TargetContainer()
     var imageFramebuffer:Framebuffer!
     var hasProcessedImage:Bool = false
-
+    private(set) var cgImage: CGImage
+    
+    public var copied: PictureInput {
+        PictureInput(image: cgImage)
+    }
+    
     public init(image:CGImage, smoothlyScaleOutput:Bool = false, orientation:ImageOrientation = .portrait) {
+        self.cgImage = image
         // TODO: Dispatch this whole thing asynchronously to move image loading off main thread
         let widthOfImage = GLint(image.width)
         let heightOfImage = GLint(image.height)
