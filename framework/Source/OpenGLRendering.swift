@@ -277,8 +277,12 @@ extension String {
     }
     
     func withGLChar(_ operation:(UnsafePointer<GLchar>) -> ()) {
-        if let value = self.cString(using:String.Encoding.utf8) {
-            operation(UnsafePointer<GLchar>(value))
+//        if let value = self.cString(using:String.Encoding.utf8) {
+//            operation(UnsafePointer<GLchar>(value))
+        //https://www.jianshu.com/p/6c5331b0aa5f
+        // https://github.com/liuqiaohong0515/GPUImage2/commit/5a3c23a30b54d459488da351c8e6133cfa0baf75
+        if let value = NSString.init(string: self).utf8String {
+            operation(value)
         } else {
             fatalError("Could not convert this string to UTF8: \(self)")
         }
