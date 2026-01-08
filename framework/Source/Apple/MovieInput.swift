@@ -3,6 +3,8 @@ import AVFoundation
 public class MovieInput: ImageSource {
     public let targets = TargetContainer()
     public var runBenchmark = false
+    public var completionClosure: (() -> Void)?
+
     
     let yuvConversionShader:ShaderProgram
     let asset:AVAsset
@@ -83,7 +85,9 @@ public class MovieInput: ImageSource {
     }
     
     func endProcessing() {
-        
+        let closure = completionClosure
+        completionClosure = nil
+        closure?()
     }
     
     // MARK: -
