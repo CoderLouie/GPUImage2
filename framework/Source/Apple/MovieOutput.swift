@@ -162,10 +162,12 @@ public class MovieOutput: ImageConsumer, AudioEncodingTarget {
         }
         
         renderIntoPixelBuffer(pixelBuffer!, framebuffer:framebuffer)
-        
-        if (!assetWriterPixelBufferInput.append(pixelBuffer!, withPresentationTime:frameTime)) {
-            debugPrint("Problem appending pixel buffer at time: \(frameTime)")
+        if assetWriterVideoInput.isReadyForMoreMediaData {
+            if (!assetWriterPixelBufferInput.append(pixelBuffer!, withPresentationTime:frameTime)) {
+                debugPrint("Problem appending pixel buffer at time: \(frameTime)")
+            }
         }
+        
         
         CVPixelBufferUnlockBaseAddress(pixelBuffer!, CVPixelBufferLockFlags(rawValue:CVOptionFlags(0)))
         if !sharedImageProcessingContext.supportsTextureCaches() {

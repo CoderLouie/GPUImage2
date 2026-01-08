@@ -4,11 +4,10 @@ public class MovieInput: ImageSource {
     public let targets = TargetContainer()
     public var runBenchmark = false
     public var completionClosure: (() -> Void)?
-
     
     let yuvConversionShader:ShaderProgram
     let asset:AVAsset
-    let assetReader:AVAssetReader
+    var assetReader:AVAssetReader
     let playAtActualSpeed:Bool
     let loop:Bool
     var videoEncodingIsFinished = false
@@ -43,8 +42,24 @@ public class MovieInput: ImageSource {
 
     // MARK: -
     // MARK: Playback control
+    public func createReader() -> AVAssetReader
+    {
+        var assetRead:AVAssetReader!
+        do{
+            assetRead = try AVAssetReader.init(asset: self.asset)
 
+            let outputSettings:[String:AnyObject] = [(kCVPixelBufferPixelFormatTypeKey as String):NSNumber(value:Int32(kCVPixelFormatType_420YpCbCr8BiPlanarFullRange))]
+            let readerVideoTrackOutput = AVAssetReaderTrackOutput(track:self.asset.tracks(withMediaType: AVMediaType.video)[0], outputSettings:outputSettings)
+            readerVideoTrackOutput.alwaysCopiesSampleData = false
+
+            assetRead.add(readerVideoTrackOutput)
+        }catch{
+
+        }
+        return assetRead
+    }
     public func start() {
+        assetReader = createReader()
         asset.loadValuesAsynchronously(forKeys:["tracks"], completionHandler:{
             standardProcessingQueue.async(execute: {
                 guard (self.asset.statusOfValue(forKey: "tracks", error:nil) == .loaded) else { return }
@@ -70,6 +85,7 @@ public class MovieInput: ImageSource {
                     self.assetReader.cancelReading()
                     
                     if (self.loop) {
+                        self.start()
                         // TODO: Restart movie processing
                     } else {
                         self.endProcessing()

@@ -81,7 +81,7 @@ open class RenderView:UIView, ImageConsumer {
         }
     }
     
-    func destroyDisplayFramebuffer() {
+    public func destroyDisplayFramebuffer() {
         sharedImageProcessingContext.runOperationSynchronously{
             if let displayFramebuffer = self.displayFramebuffer {
                 var temporaryFramebuffer = displayFramebuffer
